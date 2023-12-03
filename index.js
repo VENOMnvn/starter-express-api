@@ -16,9 +16,8 @@ app.use(cookieParser())
 // DataBase Connection
 connectdb();
 
-
 app.get("/", (req, res) => {
-    res.send("working");
+    res.send("venom code backend api v1");
 })
 
 app.use(routes);
