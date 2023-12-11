@@ -6,7 +6,7 @@ const {sharePost,getPosts,addLike,postFilter,setComment,getPost, savePost}  = re
 const {sendMessage,getConversations,getChat,deleteMessage}= require('../Controllers/Chat');
 
 const express = require("express");
-const { getNotification,checknotification, seenNotification} = require("../Controllers/Notification");
+const { getNotification,checknotification, seenNotification} = require("../Controllers/notification");
 const router = express.Router();
 
 
