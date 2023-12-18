@@ -1,30 +1,59 @@
 const User = require('../MongoDB/UserSchema');
 const { post } = require('../routes/routes');
 const POSTS = require('./../MongoDB/postSchema');
+const Problems = require("./../MongoDB/QuestionSchema");
 const Notification = require("./../MongoDB/NotificationSchema")
+
+const PostNotificationHandler = async (PostCreator,users,post)=>{
+    if(users){
+        users.forEach(async user => {
+            const userDB = await User.findOne({username:user});
+            Notification.create({
+                user : userDB._id,
+                msg:'upload a post ',
+                username:PostCreator.username,
+                profilePicture:PostCreator.profilePicture,
+                link:'/post/'+post._id,
+                extra:post.title
+            });
+        });
+    }
+}
+const addToQuestion = async (question,post)=>{
+    try{
+        await Problems.findByIdAndUpdate(question.questionID,{$push:{solutions:post._id}});
+        return;
+    }catch(err){
+        console.log(err);
+    }
+}
 
 const sharePost = async (req,res)=>{
     console.log(req.body);
     const {
-        user,label,title,code
+        user,label,title,code,question
     } = req.body;
 
     if(user){
           try{
             console.log("User At Creation Post",user);
+
             const postCreationResponse = await POSTS.create({
                 user,
                 postCode:code,
                 title,
-                label
+                label,
+                question
             });
             
-            await User.findOneAndUpdate({username:user.username},{$push:{posts:postCreationResponse._id}});
+            addToQuestion(question,postCreationResponse);
+            const userDB = await User.findOneAndUpdate({username:user.username},{$push:{posts:postCreationResponse._id}});
+            PostNotificationHandler(userDB,userDB.followers,postCreationResponse);
+
             res.send({
                 success:true,
                 response:postCreationResponse
-            })
-            
+            });
 
           }catch(err){
             console.log(err);
@@ -45,19 +74,17 @@ const sharePost = async (req,res)=>{
 
 const getPosts = async (req,res)=>{
     try{
-
         const page = req.query.page;
         const limit = req.query.limit;
-        console.log(page,limit);
-        const response = await POSTS.find().limit(limit).skip(page*limit);
+        const response = await POSTS.find().limit(limit).skip(page*limit).sort({createdAt:-1});
         res.send(response);
-        
     }catch(err){
 
     }
 };
 
 const getPost = async (req,res)=>{
+
     try{
         const {postid} = req.body;
         console.log(req.body);
@@ -90,7 +117,7 @@ const createAddLikeNotifications = async (username,UserId,post)=>{
 
 
 const addLike = async (req,res)=>{
-    
+
     try{
         const post = await POSTS.findById(req.body.post);
         console.log(post);
@@ -101,6 +128,7 @@ const addLike = async (req,res)=>{
             success:true
         });
     }
+
     catch(err){
         res.send(err);
     }
@@ -163,4 +191,29 @@ const savePost = async (req,res)=>{
     }
 }
 
-module.exports = {sharePost,getPosts,addLike,postFilter,setComment,getPost,savePost};
+const unsavepost = async (req,res)=>{
+    try{
+        const {post,user} = req.body;
+        const response = await User.findByIdAndUpdate(user,{$pull:{savedpost:post}});
+        res.send({
+            success:true
+        });
+    }
+    catch(err){
+        console.log(err);
+        res.send(err);
+    }
+}
+
+const PostLength  = async (req,res)=>{
+    try{
+        const data = await POSTS.count();
+        res.send({
+            count:data
+        });
+    }catch(e){
+        console.log(e);
+    }
+}
+
+module.exports = {sharePost,getPosts,addLike,postFilter,setComment,getPost,savePost,unsavepost,PostLength};

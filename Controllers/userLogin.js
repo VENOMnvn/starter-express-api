@@ -46,7 +46,11 @@ const userLogin = async (req, res) => {
 const resetPassword = async (req,res)=>{
       try{
 
-        const {email} = req.body;
+        let {email,password} = req.body;
+        console.log(req.body);
+        
+        const salt = await bcrypt.genSalt(10);
+        const hashPassword = await bcrypt.hash(password, salt);
 
         var rand = function() {
             return Math.random().toString(36).substr(2); // remove `0.`
@@ -60,12 +64,16 @@ const resetPassword = async (req,res)=>{
         console.log('Generated',token);
         sendToken(token,email);
 
-        const respond = await Token.create({
+        await Token.create({
             token:token,
-            email:email
+            email:email,
+            password:hashPassword
         },{timestamps:true});
 
-        res.send("OK");
+        res.send({
+            success:true
+        });
+
       }catch(err){
         console.log(err);
       } 
@@ -76,9 +84,18 @@ const resetLogin = async (req,res)=>{
     console.log(token);
     try{
         const resp = await Token.findOneAndUpdate({token},{isVerified:true});
+        if(!resp){
+            res.send("Invalid Token");
+        }
+
+        await User.findOneAndUpdate({email:resp.email},{password:resp.password});
+        
         res.send({
-            success:true
-        })
+            success:true,
+            message:"Password Changes Successfully"
+        });
+
+
     }catch(err){
 
     }
@@ -94,17 +111,15 @@ const googlesignin = async (req,res)=>{
                    
                     const existingUser = await User.findOne({email:dataFromGoogle.data.email}).select(' -password');
                     console.log(existingUser,"rr");
-                    if(existingUser){
 
+                    if(existingUser){
                         res.send({
                             success:true,
                             user:existingUser
                         });
-
                     }else{
 
                         function generatePassword(length) {
-                            
                                 charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#$@%",
                                 retVal = "";
                             for (var i = 0, n = charset.length; i < length; ++i) {
@@ -127,15 +142,15 @@ const googlesignin = async (req,res)=>{
                             dob,
                             gender:"Not Set",
                             username,
-                            googleUser:True
+                            googleUser:true
                         }
                         console.log(user);
-
                         let responseFromCreate = await User.create(user);
                         responseFromCreate.password="hidden";
                         console.log('new',responseFromCreate);
                         res.send({
                             success:true,
+                            newGoogle:true,
                             user:responseFromCreate
                         });
                     }

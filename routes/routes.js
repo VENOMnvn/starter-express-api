@@ -2,11 +2,11 @@ const { userRegisteration,userSignin,getUserName,addExperience,profileComplete} 
 const {userLogin,resetPassword, resetLogin,googlesignin} = require("../Controllers/userLogin");
 const filterFunction = require("../Controllers/filter");
 const {editprofile,getUserDetails,getUserQuery, addFollower,removeFollower,getFollower} = require("./../Controllers/profile");
-const {sharePost,getPosts,addLike,postFilter,setComment,getPost, savePost}  = require("./../Controllers/post");
+const {sharePost,getPosts,addLike,postFilter,setComment,getPost, savePost, unsavepost, PostLength}  = require("./../Controllers/post");
 const {sendMessage,getConversations,getChat,deleteMessage}= require('../Controllers/Chat');
-
+const {getProblem,getProblems,getUserProblems,CreateProblem, getProblemswithTag, getProblemsCount} = require('../Controllers/problems');
+const { getNotification,checknotification, seenNotification} = require("../Controllers/Notification");
 const express = require("express");
-const { getNotification,checknotification, seenNotification} = require("../Controllers/notification");
 const router = express.Router();
 
 
@@ -30,11 +30,13 @@ router.post("/filter", filterFunction);
 //Post
 router.post('/postfilter',postFilter);
 router.post("/sharepost",sharePost);
+router.get('/postlength',PostLength);
 router.get('/posts',getPosts);
 router.post('/getpost',getPost);
 router.post('/addlike',addLike);
 router.post('/comment',setComment);
 router.post('/savepost',savePost);
+router.post('/unsavepost',unsavepost);
 
 //Profile
 router.post('/editprofile',editprofile);
@@ -53,5 +55,13 @@ router.post('/message',sendMessage);
 router.post('/notifications',getNotification);
 router.get('/seennotification',seenNotification);
 router.get('/checknotification',checknotification);
+
+//problems
+router.post('/newproblem',CreateProblem);
+router.get('/getproblem',getProblem);
+router.get('/problems',getProblems);
+router.get('/problem/user',getUserProblems);
+router.post('/problems/tag',getProblemswithTag);
+router.get("/problems/count",getProblemsCount);
 
 module.exports = router;
