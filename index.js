@@ -18,7 +18,7 @@ app.use(cookieParser());
 connectdb();
 
 app.get("/", (req, res) => {
-  res.send("working v.1.8");
+  res.send("working v.1.9");
 });
 
 app.use(routes);
