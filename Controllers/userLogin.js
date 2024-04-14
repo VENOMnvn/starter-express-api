@@ -13,7 +13,7 @@ const userLogin = async (req, res) => {
         console.log(req.body);
 
         if (email && password) {
-            let user = await User.findOne({ email: email }).populate('posts');
+            let user = await User.findOne({ email: email });
             if (user != null) {
                 const isMatch = await bcrypt.compare(password, user.password)
                 if (user.email === email && isMatch) {
@@ -23,9 +23,8 @@ const userLogin = async (req, res) => {
                     // res.redirect('/');
                     
                     user.password = "hidden"
-                
                     const token = createToken(user._id);
-                    res.cookie('tokenVenom',token,{path:"/",httpOnly:true});
+                    res.cookie("codingSquad",token,{path:"/",httpOnly:true});
                     res.send({success:true,
                         token,
                         user
@@ -41,7 +40,6 @@ const userLogin = async (req, res) => {
         } else {
             res.send({ "status": "failed", "message": "Please fill all the fields" });
         }
-
     } catch (err) {
         console.log(err)
         res.status(400).send({ "status": "failed", "message": `${err}` })
@@ -50,7 +48,6 @@ const userLogin = async (req, res) => {
 
 const resetPassword = async (req,res)=>{
       try{
-
         let {email,password} = req.body;
         console.log(req.body);
         

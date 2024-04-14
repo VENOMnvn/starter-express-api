@@ -2,7 +2,6 @@ const { model, Schema } = require("mongoose");
 const mongoose = require('mongoose');
 
 const USER = new Schema ({
-    
     firstname: {
         type: String,
         required: true
@@ -11,31 +10,16 @@ const USER = new Schema ({
         type: String,
         required: true
     },
-    organisation:{
+    hospital:{
         type:String,
-        default:"Not Set"
+        default:"NA"
     },
-    designation:{
-        type:String,
-        default:"Venom Code User"
-    },
-    posts:{
-        type:[{type:mongoose.SchemaTypes.ObjectId,ref:"POSTS"}]
-    },
-    savedpost:{
-        type:[{type:mongoose.SchemaTypes.ObjectId,ref:"POSTS"}]
+    organs:{
+        type:Array
     },
     email: {
         type: String,
         default: null
-    },
-    phone: {
-        type: String,
-        default: null
-    },
-    username: {
-        type: String,
-        required: true
     },
     password: {
         type: String
@@ -50,12 +34,9 @@ const USER = new Schema ({
     },
     profilePicture: {
         type: String,
-        default: "http://res.cloudinary.com/dcnvvzsdh/image/upload/v1701096607/venomcode/ay07lxp5mxbsiciluo2m.jpg"
+        // default: "http://res.cloudinary.com/dcnvvzsdh/image/upload/v1701096607/venomcode/ay07lxp5mxbsiciluo2m.jpg"
     },
-    skills: {
-        type: [String]
-    },
-    likedPost: {
+    illness: {
         type: [String]
     },
     following: {
@@ -64,24 +45,29 @@ const USER = new Schema ({
     followers: {
         type:[String]
     },
-    country: {
+    state: {
         type: String,
     },
     city: {
         type: String,
         default:"Not Set"
     },
-    bio:{
+    country:{
         type:String,
-        default:"Hiii !! I am Venom Code User."
-    },
-    exp:{
-        type:Number,
-        default:0
+        default:"India"
+    }, 
+    bloodGroup:{
+        type:String
     },
     googleUser:{
         type:Boolean,
         default:false
+    },
+    need:{
+        type:String
+    },
+    referral:{
+        type:String
     }
 
 },{timestamps:true});
