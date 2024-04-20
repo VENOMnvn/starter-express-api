@@ -4,6 +4,8 @@ const { profileComplete } = require('./userRegisteration');
 // through email or phone number
 const htmlToSend = ``;
 
+
+
     async function generateOtp() {
         //   const otp=`${Math.floor(100000+Math.random() * 99999)}`;
         const otp = `${Math.floor(Math.random() * (999999 - 100000)) + 100000}`;
@@ -84,11 +86,11 @@ const htmlToSend = ``;
                         <p>Welcome</p>
                         <span>We Delight to see you</span>
                         <br>
-                        <span>Your OTP is </span>
+                        <span>Your OTP for VenomCode is </span>
                         <div class="otp">${otp}</div>
                         <span>Do not Share your OTP</span>
                         <br>
-                        <span>Regards : Coding Squad</span>
+                        <span>regards : Naveen Chaudahary</span>
                     </div>
                     
             </body>
